@@ -27,11 +27,15 @@ This repository contains two scripts that work together to extract function call
 
    Replace `<ghidra_headless_path>` with the path to the Ghidra headless analyzer executable and `<program_folder>` with the path to the directory containing the program samples you want to analyze.
 
-4. The script will create an output directory named `<program_folder>_disassemble` in the current directory. Inside this directory, you will find the following:
+4. The script will create an output directory named `<program_folder>_disassemble` in the same directory as the `<program_folder>`. Inside this directory, you will find the following:
    - `ghidra_projects`: Contains the Ghidra project files for each analyzed program sample.
    - `results`: Contains the DOT and JSON files with the extracted function call information for each analyzed program sample.
    - `split_folders`: Contains the subfolders created by splitting the input program samples based on the number of available CPUs.
    - `<program_folder>_disassemble_time.txt`: A text file containing the total execution time of the analysis.
+
+## Important Note
+
+Please note that the current implementation of parallel processing in Ghidra does not support analyzing files with the same name simultaneously. If there are files with the same name in different subfolders, it may lead to overwriting issues. Ensure that the input program samples have unique names to avoid any conflicts during the analysis process.
 
 ## Notes
 
