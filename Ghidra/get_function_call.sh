@@ -5,10 +5,9 @@ ghidra_headless_path=$1
 program_folder=$2
 
 # Get the directory of the currently executing script
-current_dir=$(pwd)
-python_script_path="${current_dir}/ghidra_function_script.py"
+output_dir="$(dirname "${program_folder}")/$(basename "${program_folder}")_disassemble"
+python_script_path="$(dirname "$0")/ghidra_opcode_script.py"
 project_name="$(basename "${program_folder}")"
-output_dir="${current_dir}/${project_name}_disassemble"
 
 # Set directory path variables based on input parameters
 project_folder="${output_dir}/ghidra_projects"
@@ -29,7 +28,7 @@ mkdir -p "${result_folder}"
 mkdir -p "${split_dir}"
 
 # Make sure time.txt file does not exist before execution to avoid retaining old results
-time_file_name="${output_dir}/${project_name}_disassemble_time.txt"
+time_file_name="${output_dir}/total_disassemble_time.txt"
 rm -f "${time_file_name}"
 
 # Split the input program_folder into max_cpu subfolders
@@ -77,3 +76,5 @@ end_time=$(date +%s)
 execution_time=$((end_time - start_time))  # Calculate the total execution time in seconds
 # Append the total execution time to the time.txt file
 echo "Total Execution Time: ${execution_time} seconds" >> "${time_file_name}"
+
+rm -rf "${split_dir}"
