@@ -9,20 +9,17 @@ import argparse
 from tqdm import tqdm
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
-def configure_logging(input_dir: str) -> tuple:
+def configure_logging(output_dir: str) -> tuple:
     """
     Configure logging settings.
 
     Args:
-        input_dir (str): Path to the input directory.
+        output_dir (str): Path to the output directory.
 
     Returns:
         tuple: A tuple containing the extraction_logger and timing_logger objects.
     """
-    log_dir = os.path.dirname(input_dir)
-
-    # Configure extraction log
-    extraction_log_file = os.path.join(log_dir, f'{os.path.basename(input_dir)}_extraction.log')
+    extraction_log_file = os.path.join(output_dir, f'extraction.log')
     print(f"Logging to: {extraction_log_file}")
     extraction_logger = logging.getLogger('extraction_logger')
     extraction_logger.setLevel(logging.INFO)
@@ -30,8 +27,7 @@ def configure_logging(input_dir: str) -> tuple:
     extraction_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
     extraction_logger.addHandler(extraction_handler)
 
-    # Configure timing log
-    timing_log_file = os.path.join(log_dir, f'{os.path.basename(input_dir)}_timing.log')
+    timing_log_file = os.path.join(output_dir, f'timing.log')
     print(f"Timing log file: {timing_log_file}")
     timing_logger = logging.getLogger('timing_logger')
     timing_logger.setLevel(logging.INFO)
@@ -143,7 +139,7 @@ def get_args(binary_path: str, output_path: str, extraction_logger: logging.Logg
             if '.' not in file:
                 binary_file_path = os.path.join(root, file)
                 relative_path = os.path.relpath(root, binary_path)
-                output_dir_path = os.path.normpath(os.path.join(output_path, relative_path, file))
+                output_dir_path = os.path.normpath(os.path.join(output_path, "results", relative_path, file))
                 args.append((binary_file_path, output_dir_path, file, extraction_logger, timing_logger))
     return args
 
@@ -161,7 +157,7 @@ def parallel_process(args: list) -> None:
 
 def setup_output_directory(input_dir: str) -> str:
     """
-    Set up the output directory for storing the extracted CSV files.
+    Set up the output directory for storing the extracted files.
 
     Args:
         input_dir (str): Path to the input directory.
@@ -171,9 +167,9 @@ def setup_output_directory(input_dir: str) -> str:
     """
     output_dir = os.path.join(os.path.dirname(input_dir), f"{os.path.basename(input_dir)}_disassemble")
     print(f"Output directory: {output_dir}")
-    for root, _, _ in os.walk(input_dir):
-        sub_dir = os.path.join(output_dir, os.path.relpath(root, input_dir))
-        os.makedirs(sub_dir, exist_ok=True)
+    os.makedirs(output_dir, exist_ok=True)
+    results_dir = os.path.join(output_dir, "results")
+    os.makedirs(results_dir, exist_ok=True)
     return output_dir
 
 def parse_arguments() -> argparse.Namespace:
@@ -183,7 +179,7 @@ def parse_arguments() -> argparse.Namespace:
     Returns:
         argparse.Namespace: Parsed arguments.
     """
-    parser = argparse.ArgumentParser(description='Extract address and opcode information from binary files.')
+    parser = argparse.ArgumentParser(description='Extract function call graph and disassembly information from binary files.')
     parser.add_argument('-d', '--directory', type=str, required=True, help='Path to the binary directory')
     args = parser.parse_args()
     args.directory = os.path.normpath(os.path.expanduser(args.directory))
@@ -196,9 +192,9 @@ def main() -> None:
     args = parse_arguments()
 
     input_dir = args.directory
-    extraction_logger, timing_logger = configure_logging(input_dir)
-
     output_dir = setup_output_directory(input_dir)
+    extraction_logger, timing_logger = configure_logging(output_dir)
+
     parallel_process(get_args(input_dir, output_dir, extraction_logger, timing_logger))
 
 if __name__ == "__main__":
