@@ -29,9 +29,11 @@ This repository contains two scripts that work together to extract function call
 
 4. The script will create an output directory named `<program_folder>_disassemble` in the same directory as the `<program_folder>`. Inside this directory, you will find the following:
    - `ghidra_projects`: Contains the Ghidra project files for each analyzed program sample.
-   - `results`: Contains the DOT and JSON files with the extracted function call information for each analyzed program sample.
+   - `results`: Contains subdirectories for each analyzed program sample, named after the program name. Each subdirectory contains the following files:
+     - `<program_name>.dot`: The DOT file representing the function call graph of the program.
+     - `<program_name>.json`: The JSON file containing detailed information about the functions, including addresses and instructions.
    - `split_folders`: Contains the subfolders created by splitting the input program samples based on the number of available CPUs.
-   - `<program_folder>_disassemble_time.txt`: A text file containing the total execution time of the analysis.
+   - `total_disassemble_time.txt`: A text file containing the total execution time of the analysis.
 
 ## Important Note
 
@@ -40,8 +42,9 @@ Please note that the current implementation of parallel processing in Ghidra doe
 ## Notes
 
 - The `ghidra_function_script.py` script is designed to be run within the Ghidra headless analyzer and should not be executed directly.
-- The script uses the `logging` module to log any errors that occur during the execution. The log file is saved in the output directory with the name `extract_function.log`.
-- The script measures the execution time for each analyzed program sample and appends it to the `execution_times.log` file in the output directory.
+- The script uses the `logging` module to log any errors that occur during the execution. The log file is saved in the output directory with the name `extraction.log`.
+- The script measures the execution time for each analyzed program sample and appends it to the `timing.log` file in the output directory.
+- After the analysis is complete, the `split_folders` directory is removed to clean up the temporary files.
 
 ## License
 
