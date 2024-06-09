@@ -46,7 +46,7 @@ try:
     fm = currentProgram.getFunctionManager()
     funcs = fm.getFunctions(True)
 
-    dot_lines = ["digraph FunctionXrefs {"]
+    dot_lines = ["digraph code {"]
     functions_info = {}
 
     # Collecting all lines to write in batch
