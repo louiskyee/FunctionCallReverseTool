@@ -33,7 +33,10 @@ To use this tool, follow these steps:
 
 4. The tool will start processing the binary files and save the extracted function call graph and disassembly information as DOT and JSON files. The progress will be displayed in the terminal.
 
-5. Once the processing is complete, the extracted files will be saved in the same location as the input directory, with the suffix `_disassemble`. Each binary file will have a corresponding DOT file for the function call graph and a JSON file for the disassembly information.
+5. Once the processing is complete, the extracted files will be saved in a directory named `<binary_directory>_disassemble` located at the same level as the input directory, where `<binary_directory>` is the name of the input directory. The `<binary_directory>_disassemble` directory will contain the following:
+   - `results` subdirectory: Contains the extracted DOT and JSON files for each binary file, maintaining the same relative path structure as the input directory.
+   - `extraction.log`: Log file recording the extraction process and any errors or warnings.
+   - `timing.log`: Log file recording the execution time for each file processing.
 
 ## Code Explanation
 
@@ -41,12 +44,12 @@ Here's a detailed explanation of each part of the tool:
 
 ### `configure_logging` Function
 
-This function is used to configure the logging settings. It takes the input directory path as a parameter and returns two logger objects: `extraction_logger` and `timing_logger`.
+This function is used to configure the logging settings. It takes the output directory path as a parameter and returns two logger objects: `extraction_logger` and `timing_logger`.
 
 - `extraction_logger` is used to log errors and warnings during the extraction process.
 - `timing_logger` is used to log the execution time for each file processing.
 
-The log files will be saved in the same location as the input directory.
+The log files will be saved in the `<binary_directory>_disassemble` directory.
 
 ### `extraction` Function
 
@@ -83,7 +86,7 @@ The function uses `ProcessPoolExecutor` to create a process pool and submits the
 
 This function is used to set up the output directory for storing the extracted files. It takes the input directory path as a parameter and returns the path to the output directory.
 
-The output directory will be located in the same location as the input directory and have the suffix `_disassemble`. The function creates corresponding subdirectories in the output directory for each subdirectory in the input directory.
+The output directory will be named `<binary_directory>_disassemble` and located at the same level as the input directory, where `<binary_directory>` is the name of the input directory. The function creates the `<binary_directory>_disassemble` directory if it doesn't exist and also creates a `results` subdirectory within it.
 
 ### `parse_arguments` Function
 
@@ -96,8 +99,8 @@ The tool accepts one required argument, `-d` or `--directory`, which specifies t
 This function is the main entry point of the tool and coordinates the entire extraction process. It performs the following steps:
 
 1. Parse the command-line arguments to obtain the input directory path.
-2. Configure the logging settings, including the extraction log and timing log.
-3. Set up the output directory for storing the extracted files.
+2. Set up the output directory for storing the extracted files.
+3. Configure the logging settings, including the extraction log and timing log.
 4. Generate the list of arguments for parallel processing.
 5. Perform parallel processing to extract function call graph and disassembly information and save the results as DOT and JSON files.
 
@@ -105,7 +108,7 @@ This function is the main entry point of the tool and coordinates the entire ext
 
 This Python tool provides a convenient way to extract function call graph and disassembly information from binary files and save the results as DOT and JSON files. It leverages Radare2 for analysis and disassembly and uses parallel processing to speed up the processing.
 
-The tool requires the installation of the `r2pipe` and `tqdm` packages and can be used via the command-line interface. The extracted files will be saved in the same location as the input directory, with each binary file having a corresponding DOT file for the function call graph and a JSON file for the disassembly information.
+The tool requires the installation of the `r2pipe` and `tqdm` packages and can be used via the command-line interface. The extracted files will be saved in a directory named `<binary_directory>_disassemble` located at the same level as the input directory, where `<binary_directory>` is the name of the input directory. The `<binary_directory>_disassemble` directory will contain the extracted DOT and JSON files for each binary file, maintaining the same relative path structure as the input directory, along with the extraction and timing log files.
 
 By using this tool, you can easily analyze binaries, obtain valuable function call graph and disassembly information for further research and analysis.
 
