@@ -6,7 +6,7 @@ program_folder=$2
 
 # Get the directory of the currently executing script
 output_dir="$(dirname "${program_folder}")/$(basename "${program_folder}")_disassemble"
-python_script_path="$(dirname "$0")/ghidra_opcode_script.py"
+python_script_path="$(dirname "$0")/ghidra_function_script.py"
 project_name="$(basename "${program_folder}")"
 
 # Set directory path variables based on input parameters
