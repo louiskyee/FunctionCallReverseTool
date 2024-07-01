@@ -56,8 +56,8 @@ try:
         name = func.getName()
 
         # Prepare function information for JSON
-        functions_info[name] = {
-            "function_address": entry_point_offset,
+        functions_info[entry_point_offset] = {
+            "function_name": name,
             "instructions": []
         }
 
@@ -69,7 +69,7 @@ try:
                 "instruction_address": str(instruction.getAddress()),
                 "instruction": str(instruction)
             }
-            functions_info[name]["instructions"].append(instruction_info)
+            functions_info[entry_point_offset]["instructions"].append(instruction_info)
 
         callees = func.getCalledFunctions(None)
         for callee in callees:
