@@ -93,7 +93,7 @@ def extraction(input_file_path: str, output_folder: str, file_name: str, extract
                 instructions = r2.cmdj(f'pdfj @ {address}')['ops']
                 for inst in instructions:
                     disasm = inst.get('disasm', 'invalid')
-                    functions_info[name]['instructions'].append(disasm)
+                    functions_info[address]['instructions'].append(disasm)
             except Exception as e:
                 extraction_logger.error(f"{file_name}: Error extracting instructions at \"{address}\" for function \"{name}\": {e}")
                 functions_info[name]['instructions'].append(f"error")
