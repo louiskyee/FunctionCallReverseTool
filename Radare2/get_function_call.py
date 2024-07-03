@@ -84,8 +84,8 @@ def extraction(input_file_path: str, output_folder: str, file_name: str, extract
                 continue
 
             address, name = match.groups()
-            functions_info[name] = {
-                "function_address": address,
+            functions_info[address] = {
+                "function_name": name,
                 "instructions": []
             }
 
