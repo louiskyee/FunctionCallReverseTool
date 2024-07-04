@@ -52,7 +52,7 @@ for file in "${program_folder}"/*; do
 done
 
 # Handle the remaining files
-if [ $remainder -gt 0 ]; then
+if [ -n "$remainder" ] && [ $remainder -gt 0 ]; then
     subfolder="${split_dir}/${project_name}_${max_cpu}"
     mkdir -p "${subfolder}"
     for file in $(find "${program_folder}" -type f | tail -n $remainder); do
