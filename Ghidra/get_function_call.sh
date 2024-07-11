@@ -26,13 +26,25 @@ process_file() {
     # Create a temporary project folder
     mkdir -p "$project_folder"
 
+    # Start time measurement
+    start_time=$(date +%s.%N)
+
     # Run Ghidra headless analyzer with timeout
     timeout --kill-after=10 "${timeout}" "$ghidra_headless_path" "$project_folder" "$project_name" -import "$file" -scriptPath "$(dirname "$python_script_path")" -postScript "$(basename "$python_script_path")" "$output_dir" "$result_folder"
 
     # Check if the process timed out
     if [ $? -eq 124 ]; then
-        echo "$(date '+%Y-%m-%d %H:%M:%S,%3N') - ERROR - Processing of $file_name timed out after $timeout seconds" >> "${output_dir}/timeout.log"
+        echo "$(date '+%Y-%m-%d %H:%M:%S,%3N') - ERROR - Processing of $file_name timed out after $timeout seconds" >> "${output_dir}/extraction.log"
         echo "$file_name" >> "${output_dir}/timed_out_files.txt"
+    else
+        # End time measurement
+        end_time=$(date +%s.%N)
+
+        # Calculate execution time
+        execution_time=$(echo "$end_time - $start_time" | bc)
+
+        # Log the execution time
+        echo "$(date '+%Y-%m-%d %H:%M:%S,%3N') - INFO - Successfully extracted function call information for $file_name, time: ${execution_time} seconds" >> "${output_dir}/extraction.log"
     fi
 
     # Remove the temporary project folder

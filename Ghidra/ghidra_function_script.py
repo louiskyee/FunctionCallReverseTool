@@ -1,5 +1,4 @@
 import os
-import time
 import json
 import logging
 from ghidra.app.util.headless import HeadlessScript
@@ -42,7 +41,6 @@ dot_file_path = os.path.join(program_folder, program_name + '.dot')
 json_file_path = os.path.join(program_folder, program_name + '.json')
 
 try:
-    start_time = time.time()
     fm = currentProgram.getFunctionManager()
     funcs = fm.getFunctions(True)
 
@@ -89,10 +87,6 @@ try:
     with open(json_file_path, "w") as json_file:
         json.dump(functions_info, json_file, indent=4)
 
-    end_time = time.time()
-    execution_time = end_time - start_time
-
-    logging.info("Successfully extracted function call information for {}, time: {:.2f}".format(program_name, execution_time))
 except Exception as e:
     error_message = "An error occurred while writing the files: {}".format(e)
     logging.error(error_message, exc_info=True)

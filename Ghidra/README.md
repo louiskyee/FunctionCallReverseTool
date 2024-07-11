@@ -4,7 +4,7 @@ This repository contains two scripts that work together to extract function call
 
 ## Scripts
 
-1. `get_function_call.sh`: This Bash script automates the process of running the Ghidra headless analyzer with the `ghidra_function_script.py` script. It takes the path to the Ghidra headless analyzer, the directory containing the program samples, an optional output directory, and an optional timeout value as input parameters. The script sets up the necessary directories, processes each file in the input directory in parallel using GNU Parallel, and handles timeouts for each file.
+1. `get_function_call.sh`: This Bash script automates the process of running the Ghidra headless analyzer with the `ghidra_function_script.py` script. It takes the path to the Ghidra headless analyzer, the directory containing the program samples, an optional output directory, and an optional timeout value as input parameters. The script processes each file in the input directory in parallel using GNU Parallel and handles timeouts for each file.
 
 2. `ghidra_function_script.py`: This Python script is designed to be run within the Ghidra headless analyzer. It extracts function call information, including function names, addresses, instructions, and call graph relationships, from the disassembled code of the input binary files. The script writes the extracted information to DOT and JSON files in the specified output directory.
 
@@ -35,16 +35,16 @@ This repository contains two scripts that work together to extract function call
    - `results`: Contains subdirectories for each analyzed program sample, named after the program name. Each subdirectory contains:
      - `<program_name>.dot`: The DOT file representing the function call graph of the program.
      - `<program_name>.json`: The JSON file containing detailed information about the functions, including addresses and instructions.
-   - `timeout.log`: Log file containing information about any files that timed out during processing.
+   - `extraction.log`: Log file containing information about the extraction process, including execution times, errors, and timeout information.
    - `timed_out_files.txt`: List of files that timed out during processing.
-   - `extraction.log`: Log file containing information about the extraction process, including any errors.
 
 ## Important Notes
 
 - The `ghidra_function_script.py` script is designed to be run within the Ghidra headless analyzer and should not be executed directly.
-- The script uses the `logging` module to log any errors that occur during the execution. The log file is saved in the output directory with the name `extraction.log`.
-- If a file analysis times out, it will be recorded in the `timeout.log` and `timed_out_files.txt` files.
+- The script uses the `logging` module to log information about the extraction process, including execution times, errors, and timeout information. All logs are consolidated into a single `extraction.log` file in the output directory.
+- If a file analysis times out, it will be recorded in the `extraction.log` and `timed_out_files.txt` files.
 - The script processes all files in the input directory in parallel, utilizing all available CPU cores.
+- Execution time for each successfully processed file is logged in the `extraction.log` file.
 
 ## License
 
