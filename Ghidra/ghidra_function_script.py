@@ -34,8 +34,8 @@ if not os.path.exists(program_folder):
 
 # Set up logging
 log_file_path = os.path.join(output_folder, 'extraction.log')
-logging.basicConfig(filename=log_file_path, level=logging.ERROR,
-                    format='%(asctime)s:%(levelname)s:%(message)s')
+logging.basicConfig(filename=log_file_path, level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Determine file paths for DOT file and JSON file
 dot_file_path = os.path.join(program_folder, program_name + '.dot')
@@ -91,9 +91,8 @@ try:
 
     end_time = time.time()
     execution_time = end_time - start_time
-    with open(os.path.join(output_folder, 'timing.log'), 'a', newline='', encoding='utf-8') as f:
-        f.write("{},{:.2f}\n".format(program_name, execution_time))
 
+    logging.info("Successfully extracted function call information for {}, time: {:.2f}".format(program_name, execution_time))
 except Exception as e:
     error_message = "An error occurred while writing the files: {}".format(e)
     logging.error(error_message, exc_info=True)
