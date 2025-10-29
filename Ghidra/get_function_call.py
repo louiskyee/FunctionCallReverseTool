@@ -88,9 +88,9 @@ def extract_features(input_file_path: str, output_dir: str, ghidra_headless_path
             return False
 
         # Check if the output files were generated
-        output_folder_path = os.path.join(results_folder, file_name)
-        dot_file_path = os.path.join(output_folder_path, f"{file_name}.dot")
-        json_file_path = os.path.join(output_folder_path, f"{file_name}.json")
+        output_dir_path = os.path.join(results_folder, file_name)
+        dot_file_path = os.path.join(output_dir_path, f"{file_name}.dot")
+        json_file_path = os.path.join(output_dir_path, f"{file_name}.json")
 
         if os.path.exists(dot_file_path) and os.path.exists(json_file_path):
             return True
@@ -174,9 +174,9 @@ def get_args(binary_path: str, output_path: str, extraction_logger: logging.Logg
         for file in files:
             if '.' not in file:
                 binary_file_path = os.path.join(root, file)
-                output_folder_path = os.path.normpath(os.path.join(output_path, RESULTS_SUBDIR, file))
+                output_dir_path = os.path.normpath(os.path.join(output_path, RESULTS_SUBDIR, file))
                 # Don't create directory here - will be created when needed
-                args.append((binary_file_path, output_folder_path, file, extraction_logger,
+                args.append((binary_file_path, output_dir_path, file, extraction_logger,
                            output_path, ghidra_headless_path, timeout_seconds))
     return args
 

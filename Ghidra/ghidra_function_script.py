@@ -38,19 +38,19 @@ except Exception as e:
     print("ERROR: " + error_message)
     raise
 
-program_name = currentProgram.getName()
-program_folder = os.path.join(results_folder, program_name)
+file_name = currentProgram.getName()
+output_dir_path = os.path.join(results_folder, file_name)
 
-# Create the program-specific directory
-if not os.path.exists(program_folder):
-    os.makedirs(program_folder)
+# Create the file-specific directory
+if not os.path.exists(output_dir_path):
+    os.makedirs(output_dir_path)
 
 # Set up logging with dedicated logger
 extraction_logger = configure_extraction_logger(output_folder)
 
 # Determine file paths for DOT file and JSON file
-dot_file_path = os.path.join(program_folder, program_name + '.dot')
-json_file_path = os.path.join(program_folder, program_name + '.json')
+dot_file_path = os.path.join(output_dir_path, file_name + '.dot')
+json_file_path = os.path.join(output_dir_path, file_name + '.json')
 
 try:
     # Record start time (CPU time)
@@ -62,10 +62,10 @@ try:
     # Check if functions exist
     func_list = list(funcs)
     if not func_list:
-        extraction_logger.error("{}: No functions found - file may be packed, damaged, or incomplete".format(program_name))
+        extraction_logger.error("{}: No functions found - file may be packed, damaged, or incomplete".format(file_name))
         raise Exception("No functions found")
 
-    dot_lines = ["digraph code {"]
+    function_call_graph = ["digraph code {"]
     functions_info = {}
 
     # Collecting all function information
@@ -80,7 +80,7 @@ try:
             "instructions": []
         }
 
-        dot_lines.append('  "{}" [label="{}"];'.format(entry_point_offset, name))
+        function_call_graph.append('  "{}" [label="{}"];'.format(entry_point_offset, name))
 
         # Extracting instructions for each function
         try:
@@ -88,7 +88,7 @@ try:
                 disasm = str(instruction)
                 functions_info[entry_point_offset]["instructions"].append(disasm)
         except Exception as e:
-            extraction_logger.error("{}: Error extracting instructions for function \"{}\": {}".format(program_name, name, str(e)))
+            extraction_logger.error("{}: Error extracting instructions for function \"{}\": {}".format(file_name, name, str(e)))
             functions_info[entry_point_offset]["instructions"].append("error")
 
         # Extract function calls
@@ -98,34 +98,34 @@ try:
             callee_entry_point = callee.getEntryPoint()
             callee_entry_point_offset = hex(callee_entry_point.getOffset())
             # Write DOT file content
-            dot_lines.append('  "{}" -> "{}";'.format(entry_point_offset, callee_entry_point_offset))
+            function_call_graph.append('  "{}" -> "{}";'.format(entry_point_offset, callee_entry_point_offset))
 
-    dot_lines.append("}")
+    function_call_graph.append("}")
 
     # Calculate execution time
     execution_time = time.process_time() - start_time
 
     # Only create output files if we have extracted function information
     if not functions_info:
-        extraction_logger.error("{}: No function information extracted".format(program_name))
+        extraction_logger.error("{}: No function information extracted".format(file_name))
         raise Exception("No function information extracted")
 
     # Writing to DOT file
     with open(dot_file_path, "w", encoding='utf-8') as dot_file:
-        dot_file.write("\n".join(dot_lines))
+        dot_file.write("\n".join(function_call_graph))
 
     # Writing to JSON file
     with open(json_file_path, "w") as json_file:
         json.dump(functions_info, json_file, indent=4)
 
     # Log success with timing information
-    extraction_logger.info("{}: Successfully extracted function call information".format(program_name))
+    extraction_logger.info("{}: Successfully extracted function call information".format(file_name))
 
     # Write timing information to timing.log
     timing_log_path = os.path.join(output_folder, 'timing.log')
     with open(timing_log_path, 'a') as timing_file:
-        timing_file.write("{},{:.2f}\n".format(program_name, execution_time))
+        timing_file.write("{},{:.2f}\n".format(file_name, execution_time))
 
 except Exception as e:
-    error_message = "{}: An error occurred while extracting function calls - {}".format(program_name, str(e))
+    error_message = "{}: An error occurred while extracting function calls - {}".format(file_name, str(e))
     extraction_logger.error(error_message, exc_info=True)
