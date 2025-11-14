@@ -13,7 +13,7 @@ run_sudo() {
 }
 
 run_sudo apt-get update
-run_sudo apt-get install -y git make wget unzip python3 python3-pip gcc g++ python3-venv python-is-python3 tar
+run_sudo apt-get install -y git make wget unzip python3 python3-pip gcc g++ python3-venv python-is-python3 tar curl jq
 
 # Download and install JDK 17
 JDK_ARCHIEVE=/home/$USER/tmp/jdk-17.0.7_linux-x64_bin.tar.gz
@@ -62,14 +62,33 @@ else
 fi
 
 
-# Download and install the specific release of Ghidra
-GHIDRA_ARCHIEVE=/home/$USER/tmp/ghidra_10.3.1_PUBLIC_20230614.zip
+# Download and install the latest release of Ghidra
 GHIDRA_DIR=/home/$USER/ghidra
+mkdir -p /home/$USER/tmp
 
-wget https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_10.3.1_build/ghidra_10.3.1_PUBLIC_20230614.zip -P /home/$USER/tmp || { echo "Failed to download Ghidra"; exit 1; }
+# Get the latest Ghidra release download URL
+echo "Fetching latest Ghidra release information..."
+GHIDRA_DOWNLOAD_URL=$(curl -s https://api.github.com/repos/NationalSecurityAgency/ghidra/releases/latest | grep "browser_download_url.*\.zip" | cut -d '"' -f 4)
+GHIDRA_ZIP_NAME=$(basename "$GHIDRA_DOWNLOAD_URL")
+GHIDRA_ARCHIEVE=/home/$USER/tmp/$GHIDRA_ZIP_NAME
+
+if [ -z "$GHIDRA_DOWNLOAD_URL" ]; then
+    echo "Failed to fetch latest Ghidra release URL"
+    exit 1
+fi
+
+echo "Downloading latest Ghidra: $GHIDRA_ZIP_NAME"
+wget "$GHIDRA_DOWNLOAD_URL" -O "$GHIDRA_ARCHIEVE" || { echo "Failed to download Ghidra"; exit 1; }
 unzip $GHIDRA_ARCHIEVE -d $GHIDRA_DIR || { echo "Failed to unzip Ghidra"; exit 1; }
 
-export GHIDRA_HOME=$GHIDRA_DIR/ghidra_10.3.1_PUBLIC
+# Automatically detect the extracted Ghidra directory
+GHIDRA_HOME=$(find $GHIDRA_DIR -maxdepth 1 -type d -name "ghidra_*_PUBLIC" | head -n 1)
+if [ -z "$GHIDRA_HOME" ]; then
+    echo "Failed to find extracted Ghidra directory"
+    exit 1
+fi
+
+export GHIDRA_HOME
 
 # Make the ghidraRun script executable
 chmod +x $GHIDRA_HOME/ghidraRun
@@ -98,12 +117,23 @@ pip install jep || { echo "Failed to install JEP"; exit 1; }
 # Assuming GHIDRA_INSTALL_DIR is set to Ghidra's installation directory
 export GHIDRA_INSTALL_DIR=$GHIDRA_HOME
 
-# Clone the Ghidrathon repository and download the JEP jar
+# Clone the latest Ghidrathon repository and download the latest JEP jar
 cd /home/$USER/tmp
+echo "Cloning latest Ghidrathon repository..."
 git clone https://github.com/mandiant/Ghidrathon.git || { echo "Failed to clone Ghidrathon repository"; exit 1; }
 
 cd Ghidrathon/lib
-wget https://github.com/ninia/jep/releases/download/v4.2.0/jep-4.2.0.jar || { echo "Failed to download JEP jar"; exit 1; }
+
+# Get the latest JEP release version
+echo "Fetching latest JEP release information..."
+JEP_VERSION=$(curl -s https://api.github.com/repos/ninia/jep/releases/latest | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
+if [ -z "$JEP_VERSION" ]; then
+    echo "Failed to fetch latest JEP version, falling back to 4.2.0"
+    JEP_VERSION="4.2.0"
+fi
+
+echo "Downloading JEP version: $JEP_VERSION"
+wget https://github.com/ninia/jep/releases/download/v${JEP_VERSION}/jep-${JEP_VERSION}.jar || { echo "Failed to download JEP jar"; exit 1; }
 
 cd /home/$USER/tmp/Ghidrathon
 gradle -PGHIDRA_INSTALL_DIR=$GHIDRA_HOME || { echo "Failed to build Ghidrathon"; exit 1; }
