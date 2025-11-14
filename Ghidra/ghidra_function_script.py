@@ -38,7 +38,7 @@ except Exception as e:
     print("ERROR: " + error_message)
     raise
 
-file_name = currentProgram.getName()
+file_name = currentProgram().getName()
 output_dir_path = os.path.join(results_folder, file_name)
 
 # Create the file-specific directory
@@ -56,7 +56,7 @@ try:
     # Record start time (CPU time)
     start_time = time.process_time()
 
-    fm = currentProgram.getFunctionManager()
+    fm = currentProgram().getFunctionManager()
     funcs = fm.getFunctions(True)
 
     # Check if functions exist
@@ -84,7 +84,7 @@ try:
 
         # Extracting instructions for each function
         try:
-            for instruction in currentProgram.getListing().getInstructions(func.getBody(), True):
+            for instruction in currentProgram().getListing().getInstructions(func.getBody(), True):
                 disasm = str(instruction)
                 functions_info[entry_point_offset]["instructions"].append(disasm)
         except Exception as e:
