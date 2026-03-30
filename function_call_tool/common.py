@@ -119,10 +119,10 @@ def _extraction_worker(backend_name: str, args, input_file: str,
                        output_dir: str, filename: str,
                        root_output_dir: str, timeout: int) -> float:
     """Worker function for parallel extraction. Runs in a separate process.
+    Skips when output files (.dot, .json) already exist.
     Returns execution time in seconds, or 0.0 if failed/skipped."""
     extraction_logger = _get_extraction_logger(root_output_dir)
 
-    # Check if output files already exist
     dot_path = os.path.join(output_dir, f"{filename}.dot")
     json_path = os.path.join(output_dir, f"{filename}.json")
     if os.path.exists(dot_path) and os.path.exists(json_path):
@@ -141,6 +141,9 @@ def _extraction_worker(backend_name: str, args, input_file: str,
         execution_time = time.perf_counter() - start_time
 
         if not features:
+            extraction_logger.warning(
+                f"{filename}: Backend returned no features, skipping"
+            )
             return 0.0
 
         write_output(features, output_dir, filename)
@@ -167,14 +170,20 @@ def _extraction_worker(backend_name: str, args, input_file: str,
 
 def parallel_process(files: List[Tuple[str, str, str]], backend_name: str,
                      args, output_dir: str, timeout: int,
-                     worker_multiplier: int = 2) -> None:
-    """Process extraction tasks in parallel."""
+                     worker_multiplier: int) -> None:
+    """Process extraction tasks in parallel.
+
+    Args:
+        worker_multiplier: Factor multiplied by CPU count to determine
+            max worker processes (e.g. 2 for Ghidra, 1 for Radare2).
+    """
     if not files:
         print("No files to process.")
         return
 
     cpu_count = os.cpu_count() or 1
     max_workers = min(cpu_count * worker_multiplier, len(files))
+    succeeded = 0
 
     with ProcessPoolExecutor(max_workers=max_workers) as executor:
         futures = [
@@ -188,8 +197,15 @@ def parallel_process(files: List[Tuple[str, str, str]], backend_name: str,
         with tqdm(total=len(futures), desc="Processing files",
                   unit="file") as pbar:
             for future in as_completed(futures):
-                future.result()
+                try:
+                    if future.result() > 0.0:
+                        succeeded += 1
+                except Exception:
+                    pass
                 pbar.update(1)
+
+    failed = len(files) - succeeded
+    print(f"Results: {succeeded} succeeded, {failed} failed/skipped")
 
 
 def run(backend_name: str, args) -> None:
@@ -207,8 +223,9 @@ def run(backend_name: str, args) -> None:
         return
 
     print(f"Found {len(files)} files to process")
-    parallel_process(files, backend_name, args, output_dir, args.timeout,
-                     backend_cls.worker_multiplier)
-
-    backend.cleanup()
+    try:
+        parallel_process(files, backend_name, args, output_dir, args.timeout,
+                         backend_cls.worker_multiplier)
+    finally:
+        backend.cleanup()
     print("Extraction complete.")

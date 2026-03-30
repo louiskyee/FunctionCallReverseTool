@@ -123,7 +123,7 @@ class Radare2Backend(BaseBackend):
                 }
 
         except Exception as e:
-            extraction_logger.error(
+            extraction_logger.exception(
                 f"{file_name}: Unexpected error - {e}"
             )
             return {}
@@ -151,4 +151,7 @@ class Radare2Backend(BaseBackend):
             yield r2
         finally:
             if r2:
-                r2.quit()
+                try:
+                    r2.quit()
+                except Exception:
+                    pass

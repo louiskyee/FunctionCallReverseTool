@@ -4,7 +4,7 @@ Runs inside Ghidra's headless analyzer environment.
 Receives one argument: the folder where the temp DOT and JSON files
 should be written.
 
-Uses .format() instead of f-strings for Jython/Ghidrathon compatibility.
+Uses .format() instead of f-strings for broad Ghidrathon compatibility.
 """
 import os
 import json
