@@ -14,5 +14,8 @@ dependencies = [
     "tqdm",
 ]
 
+[tool.setuptools.package-data]
+function_call_tool = ["scripts/*"]
+
 [project.scripts]
 get-function-call = "function_call_tool.cli:main"

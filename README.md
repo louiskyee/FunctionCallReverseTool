@@ -182,14 +182,14 @@ FunctionCallReverseTool/
 │   ├── __main__.py                # python -m support
 │   ├── cli.py                     # CLI argument parsing and main()
 │   ├── common.py                  # Shared logic (logging, parallel processing, output)
-│   └── backends/
-│       ├── __init__.py            # Backend registry
-│       ├── base.py                # BaseBackend ABC
-│       ├── ghidra.py              # Ghidra backend
-│       └── radare2.py             # Radare2 backend
-├── scripts/
-│   ├── ghidra_function_script.py  # Ghidra internal extraction script
-│   └── r2_timeout_check.sh        # Radare2 timeout check
+│   ├── backends/
+│   │   ├── __init__.py            # Backend registry
+│   │   ├── base.py                # BaseBackend ABC
+│   │   ├── ghidra.py              # Ghidra backend
+│   │   └── radare2.py             # Radare2 backend
+│   └── scripts/
+│       ├── ghidra_function_script.py  # Ghidra internal extraction script
+│       └── r2_timeout_check.sh        # Radare2 timeout check
 ├── deployment-scripts/            # Docker deployment configurations
 ├── test_benign_data/              # Sample benign test binaries
 └── test_malware_data/             # Sample malware test binaries

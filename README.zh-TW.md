@@ -182,14 +182,14 @@ FunctionCallReverseTool/
 │   ├── __main__.py                # python -m 支援
 │   ├── cli.py                     # CLI 參數解析和 main()
 │   ├── common.py                  # 共用邏輯（日誌、並行處理、輸出）
-│   └── backends/
-│       ├── __init__.py            # 後端註冊表
-│       ├── base.py                # BaseBackend ABC
-│       ├── ghidra.py              # Ghidra 後端
-│       └── radare2.py             # Radare2 後端
-├── scripts/
-│   ├── ghidra_function_script.py  # Ghidra 內部提取腳本
-│   └── r2_timeout_check.sh        # Radare2 超時檢查
+│   ├── backends/
+│   │   ├── __init__.py            # 後端註冊表
+│   │   ├── base.py                # BaseBackend ABC
+│   │   ├── ghidra.py              # Ghidra 後端
+│   │   └── radare2.py             # Radare2 後端
+│   └── scripts/
+│       ├── ghidra_function_script.py  # Ghidra 內部提取腳本
+│       └── r2_timeout_check.sh        # Radare2 超時檢查
 ├── deployment-scripts/            # Docker 部署配置
 ├── test_benign_data/              # 範例良性測試二進位檔案
 └── test_malware_data/             # 範例惡意軟體測試二進位檔案

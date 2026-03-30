@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from typing import Dict
 
 SCRIPTS_DIR = os.path.normpath(
-    os.path.join(os.path.dirname(__file__), '..', '..', 'scripts')
+    os.path.join(os.path.dirname(__file__), '..', 'scripts')
 )
 
 
