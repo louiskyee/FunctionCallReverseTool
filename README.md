@@ -1,6 +1,6 @@
 # FunctionCallReverseTool
 
-[English](README.md) | [繁體中文](README.zh-TW.md)
+[English](README.md) | [繁體中文](docs/README.zh-TW.md)
 
 A unified function call graph and disassembly extraction framework for security researchers and reverse engineers. Extract function call relationships (DOT graph) and per-function disassembly (JSON) from binary files using a single CLI, regardless of which reverse engineering backend you use.
 
@@ -42,13 +42,10 @@ Pre-configured Docker environments are available in `deployment-scripts/`. See [
 ### Basic Syntax
 
 ```bash
-# Run directly
-python get_function_call.py -b <backend> -d <binary_directory> [options]
-
-# Run as module
+# Run as module (no install required)
 python -m function_call_tool -b <backend> -d <binary_directory> [options]
 
-# Run after pip install
+# Run after pip install -e .
 get-function-call -b <backend> -d <binary_directory> [options]
 ```
 
@@ -69,38 +66,38 @@ get-function-call -b <backend> -d <binary_directory> [options]
 
 ```bash
 # Basic usage
-python get_function_call.py -b ghidra -d /path/to/binaries -g ~/ghidra/support/analyzeHeadless
+python -m function_call_tool -b ghidra -d /path/to/binaries -g ~/ghidra/support/analyzeHeadless
 
 # Custom output directory
-python get_function_call.py -b ghidra -d /path/to/binaries -g ~/ghidra/support/analyzeHeadless -o /path/to/output
+python -m function_call_tool -b ghidra -d /path/to/binaries -g ~/ghidra/support/analyzeHeadless -o /path/to/output
 
 # Custom timeout (1200 seconds)
-python get_function_call.py -b ghidra -d /path/to/binaries -g ~/ghidra/support/analyzeHeadless -t 1200
+python -m function_call_tool -b ghidra -d /path/to/binaries -g ~/ghidra/support/analyzeHeadless -t 1200
 
 # Process only .exe files
-python get_function_call.py -b ghidra -d /path/to/binaries -g ~/ghidra/support/analyzeHeadless --pattern "*.exe"
+python -m function_call_tool -b ghidra -d /path/to/binaries -g ~/ghidra/support/analyzeHeadless --pattern "*.exe"
 
 # All options combined
-python get_function_call.py -b ghidra -d /path/to/binaries -g ~/ghidra/support/analyzeHeadless -o /path/to/output -t 1200 --pattern "*.exe"
+python -m function_call_tool -b ghidra -d /path/to/binaries -g ~/ghidra/support/analyzeHeadless -o /path/to/output -t 1200 --pattern "*.exe"
 ```
 
 #### Radare2 Backend
 
 ```bash
 # Basic usage
-python get_function_call.py -b radare2 -d /path/to/binaries
+python -m function_call_tool -b radare2 -d /path/to/binaries
 
 # Custom output directory
-python get_function_call.py -b radare2 -d /path/to/binaries -o /path/to/output
+python -m function_call_tool -b radare2 -d /path/to/binaries -o /path/to/output
 
 # Custom timeout (300 seconds)
-python get_function_call.py -b radare2 -d /path/to/binaries -t 300
+python -m function_call_tool -b radare2 -d /path/to/binaries -t 300
 
 # Process all files (including those with extensions)
-python get_function_call.py -b radare2 -d /path/to/binaries --pattern "*"
+python -m function_call_tool -b radare2 -d /path/to/binaries --pattern "*"
 
 # All options combined
-python get_function_call.py -b radare2 -d /path/to/binaries -o /path/to/output -t 300 --pattern "*"
+python -m function_call_tool -b radare2 -d /path/to/binaries -o /path/to/output -t 300 --pattern "*"
 ```
 
 ## Output Format
@@ -174,12 +171,11 @@ Each `.json` file contains per-function disassembly information:
 
 ```
 FunctionCallReverseTool/
-├── get_function_call.py           # CLI entry point (thin wrapper)
 ├── pyproject.toml                 # Python packaging configuration
 ├── requirements.txt               # Python dependencies
 ├── function_call_tool/
 │   ├── __init__.py
-│   ├── __main__.py                # python -m support
+│   ├── __main__.py                # python -m entry point
 │   ├── cli.py                     # CLI argument parsing and main()
 │   ├── common.py                  # Shared logic (logging, parallel processing, output)
 │   ├── backends/
@@ -190,6 +186,7 @@ FunctionCallReverseTool/
 │   └── scripts/
 │       ├── ghidra_function_script.py  # Ghidra internal extraction script
 │       └── r2_timeout_check.sh        # Radare2 timeout check
+├── docs/                          # Translated documentation
 ├── deployment-scripts/            # Docker deployment configurations
 ├── test_benign_data/              # Sample benign test binaries
 └── test_malware_data/             # Sample malware test binaries
@@ -205,7 +202,7 @@ FunctionCallReverseTool/
 - **Extensible Architecture** - ABC-based backend system for easy addition of new tools
 - **Comprehensive Logging** - Separate extraction and timing logs for debugging and analysis
 - **Resource Cleanup** - Automatic cleanup of temporary files after processing
-- **Modern Packaging** - Supports `pip install`, `python -m`, and direct script execution
+- **Modern Packaging** - Supports `pip install` and `python -m` execution
 
 ## Adding a New Backend
 
