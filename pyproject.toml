@@ -1,0 +1,50 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "function-call-reverse-tool"
+version = "1.0.0"
+description = "Unified function call graph and disassembly extraction from binary files"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.8"
+authors = [{name = "PolinLai"}]
+keywords = ["reverse-engineering", "binary-analysis", "function-call", "ghidra", "radare2", "malware-analysis"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Operating System :: POSIX :: Linux",
+    "Topic :: Security",
+    "Intended Audience :: Developers",
+]
+dependencies = [
+    "r2pipe",
+    "tqdm",
+]
+
+[project.urls]
+Homepage = "https://github.com/bolin8017/FunctionCallReverseTool"
+Repository = "https://github.com/bolin8017/FunctionCallReverseTool"
+"Bug Tracker" = "https://github.com/bolin8017/FunctionCallReverseTool/issues"
+Changelog = "https://github.com/bolin8017/FunctionCallReverseTool/blob/main/CHANGELOG.md"
+
+[project.optional-dependencies]
+dev = ["ruff", "pytest", "pre-commit"]
+
+[project.scripts]
+get-function-call = "function_call_tool.cli:main"
+
+[tool.setuptools.package-data]
+function_call_tool = ["scripts/*"]
+
+[tool.ruff]
+target-version = "py38"
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

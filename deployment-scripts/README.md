@@ -1,58 +1,52 @@
 # Deployment Scripts
 
-## Overview
-
-This repository contains automation scripts for deploying environments for IDA Pro, Ghidra, and Radare2. These scripts are designed to streamline the setup process for these powerful reverse engineering tools, ensuring you can get up and running quickly with minimal manual configuration.
+Docker environments for running [FunctionCallReverseTool](https://github.com/bolin8017/FunctionCallReverseTool) with supported reverse engineering backends.
 
 ## Contents
 
-The deployment scripts are organized into separate directories for each tool, each containing a Dockerfile and a shell script:
-
-- **IDA Pro Deployment**
-  - **Directory**: `ida_pro_deploy/`
-    - `Dockerfile` - Docker configuration for IDA Pro.
-    - `ida_pro_deploy.sh` - Script to automatically set up IDA Pro.
-
-- **Ghidra Deployment**
-  - **Directory**: `ghidra_deploy/`
-    - `Dockerfile` - Docker configuration for Ghidra.
-    - `ghidra_deploy.sh` - Script to automatically install and configure Ghidra.
-
-- **Radare2 Deployment**
-  - **Directory**: `radare2_deploy/`
-    - `Dockerfile` - Docker configuration for Radare2.
-    - `radare2_deploy.sh` - Script to facilitate the deployment of Radare2.
+| Directory | Description |
+|---|---|
+| `ghidra_deploy/` | Dockerfile and `ghidra_deploy.sh` for a Ghidra environment |
+| `radare2_deploy/` | Dockerfile and `radare2_deploy.sh` for a Radare2 environment |
 
 ## Usage
 
-To use these deployment scripts, clone the repository and run the desired script according to the tool you wish to set up. Ensure you have the necessary permissions to execute the scripts on your system.
+### Build
 
 ```bash
-git clone https://github.com/louiskyee/OpCodeReverseTool.git
-cd deployment-scripts
-cd <tool_directory>  # e.g., ida_pro_deploy, ghidra_deploy, or radare2_deploy
-docker build -t <tool_name>-image .
-docker run -it --name <tool_name>-container <tool_name>-image
+git clone https://github.com/bolin8017/FunctionCallReverseTool.git
+cd FunctionCallReverseTool/deployment-scripts
+
+# Ghidra
+docker build -t ghidra-env ghidra_deploy/
+
+# Radare2
+docker build -t radare2-env radare2_deploy/
 ```
 
-## Example
+### Run
+
+Start a container and mount your binary samples directory:
+
 ```bash
-git clone https://github.com/louiskyee/OpCodeReverseTool.git
-cd deployment-scripts/radare2_deploy
-docker build -t radare2-image .
-docker run -it --name radare2-container radare2-image
+# Ghidra
+docker run -it -v /path/to/binaries:/samples ghidra-env
+
+# Radare2
+docker run -it -v /path/to/binaries:/samples radare2-env
+```
+
+### Analyze binaries inside the container
+
+```bash
+# Ghidra (adjust the analyzeHeadless path to match the installed version)
+python -m function_call_tool -b ghidra -d /samples -g /opt/ghidra/support/analyzeHeadless
+
+# Radare2
+python -m function_call_tool -b radare2 -d /samples
 ```
 
 ## Requirements
 
-- Linux OS or a compatible Unix-like system
-- Sudo or root access to install packages
-- Internet connection to download necessary files
-
-## Contributing
-
-Contributions to improve the scripts or add new functionalities are welcome. Please submit a pull request or open an issue to discuss your ideas.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/louiskyee/OpCodeReverseTool/blob/main/LICENSE) file for details.
+- Docker
+- Internet connection (to pull base images and install packages during build)
