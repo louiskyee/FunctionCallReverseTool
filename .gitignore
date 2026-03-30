@@ -33,16 +33,22 @@ env/
 *.swp
 *.swo
 *~
-.DS_Store
+
+# Claude Code
+.claude/
 
 # Jupyter Notebook
 .ipynb_checkpoints
 
 # Test Data and Output Files
-test*/
+test_benign_data/
+test_malware_data/
+test_malware_data_disassemble*/
 
 # Results and Output
 results/
+output/
+# Analysis output files only
 *.json
 *.dot
 *.log
