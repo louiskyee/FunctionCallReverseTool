@@ -89,8 +89,8 @@ class GhidraBackend(BaseBackend):
                 project_folder, f"{file_name}.json"
             )
 
-            if not os.path.exists(dot_path) or \
-               not os.path.exists(json_path):
+            if (not os.path.exists(dot_path) or
+                    not os.path.exists(json_path)):
                 stderr_tail = (result.stderr[-500:]
                                if result.stderr else "no output")
                 extraction_logger.error(

@@ -61,4 +61,8 @@ def main() -> None:
         print(f"Error: Directory not found: {args.directory}")
         sys.exit(1)
 
-    run(args.backend, args)
+    try:
+        run(args.backend, args)
+    except RuntimeError as e:
+        print(f"Error: {e}")
+        sys.exit(1)

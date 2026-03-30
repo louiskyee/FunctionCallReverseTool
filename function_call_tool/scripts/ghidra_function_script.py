@@ -78,5 +78,5 @@ with open(dot_path, 'w', encoding='utf-8') as f:
 
 # Write JSON file
 json_path = os.path.join(output_folder, file_name + '.json')
-with open(json_path, 'w') as f:
+with open(json_path, 'w', encoding='utf-8') as f:
     json.dump(functions_info, f, indent=4)
