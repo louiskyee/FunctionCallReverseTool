@@ -166,15 +166,15 @@ def _extraction_worker(backend_name: str, args, input_file: str,
 
 
 def parallel_process(files: List[Tuple[str, str, str]], backend_name: str,
-                     args, output_dir: str, timeout: int) -> None:
+                     args, output_dir: str, timeout: int,
+                     worker_multiplier: int = 2) -> None:
     """Process extraction tasks in parallel."""
     if not files:
         print("No files to process.")
         return
 
-    backend_cls = get_backend(backend_name)
     cpu_count = os.cpu_count() or 1
-    max_workers = min(cpu_count * backend_cls.worker_multiplier, len(files))
+    max_workers = min(cpu_count * worker_multiplier, len(files))
 
     with ProcessPoolExecutor(max_workers=max_workers) as executor:
         futures = [
@@ -187,7 +187,8 @@ def parallel_process(files: List[Tuple[str, str, str]], backend_name: str,
         ]
         with tqdm(total=len(futures), desc="Processing files",
                   unit="file") as pbar:
-            for _ in as_completed(futures):
+            for future in as_completed(futures):
+                future.result()
                 pbar.update(1)
 
 
@@ -206,7 +207,8 @@ def run(backend_name: str, args) -> None:
         return
 
     print(f"Found {len(files)} files to process")
-    parallel_process(files, backend_name, args, output_dir, args.timeout)
+    parallel_process(files, backend_name, args, output_dir, args.timeout,
+                     backend_cls.worker_multiplier)
 
     backend.cleanup()
     print("Extraction complete.")

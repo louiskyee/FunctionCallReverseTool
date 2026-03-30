@@ -67,6 +67,10 @@ class Radare2Backend(BaseBackend):
                 function_call_graph = ['digraph code {']
                 functions_info = {}
 
+                # agCd output: 6 header lines (digraph, rankdir,
+                # outputorder, graph, edge, node), content, then
+                # closing "}" and empty line. Strip to keep only
+                # node/edge definitions.
                 EDGE_START_IDX = 6
                 EDGE_END_IDX = -2
                 pattern = r'\"(0x[0-9a-fA-F]+)\" \[label=\"([^\"]+)\"\];'
