@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "function-call-reverse-tool"
+version = "1.0.0"
+description = "Unified function call graph and disassembly extraction from binary files"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.8"
+dependencies = [
+    "r2pipe",
+    "tqdm",
+]
+
+[project.scripts]
+get-function-call = "function_call_tool.cli:main"
