@@ -16,10 +16,10 @@ USER radare2user
 WORKDIR /home/radare2user
 
 # Copy the installation script into the container
-COPY --chown=radare2user:radare2user install_radare2.sh /install_radare2.sh
+COPY --chown=radare2user:radare2user radare2_deploy.sh /home/radare2user/radare2_deploy.sh
 
 # Grant execution permissions to the script
-RUN chmod +x /install_radare2.sh
+RUN chmod +x /home/radare2user/radare2_deploy.sh
 
 # Run the script when the container starts
-CMD ["/radare2_deploy.sh"]
+CMD ["/home/radare2user/radare2_deploy.sh"]
